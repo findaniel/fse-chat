@@ -1,0 +1,39 @@
+<html>
+	<head>
+		<title>Welcome to the FSE Chatroom</title>
+		<link rel="stylesheet" href="css/bootstrap.min.css"/>
+		<link rel="stylesheet" href="css/bootstrap-theme.min.css"/>
+		<script src="js/jquery-2.1.4.min.js" type="text/javascript"></script>
+		<script src="js/bootstrap.min.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<div class="row">
+			<div class="col-md-4">&nbsp;</div>
+			<div class="col-md-1">&nbsp;</div>
+			<div class="col-md-3">
+                <div class="panel panel-primary">
+					<div class="panel-heading">
+						<div style="float:left"><h3 class="panel-title">FSE Chat</h3></div>&nbsp;
+						<div style="float:right"><a href="/" style="color:#fff"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></a></div>
+					</div>
+					<div class="panel-body">
+						<div id="content">
+							<h3 style="text-align: center;">Welcome to Foundations of Software Engineering. Join our Chat!</h3>
+							<div>&nbsp;</div>
+							<div class="thumbnail">
+								<img src="images/chat-icon.png" alt="Click to Chat" height="200px" width="200px"/>
+							</div>
+							<div>&nbsp;</div>
+							<form method="post" action="/chat">
+								<p><input type="text" class="form-control" placeholder="Username" name="username"></p>
+                        		<p style="text-align: right;"><button class="btn btn-primary">Join</button></p>
+							</form>
+						</div> 
+					</div>
+				</div>
+  			</div>
+			<div class="col-md-1">&nbsp;</div>
+			<div class="col-md-4">&nbsp;</div>
+		</div>
+	</body>
+</html>
