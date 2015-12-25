@@ -6,11 +6,21 @@ var ejs = require('ejs');
 var fs = require("fs");
 var moment = require("moment");
 var bodyParser = require('body-parser'); // To parse my post params
+var sqlite3 = require('sqlite3');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('assets'));
 
+// Initialize DB
+var db = new sqlite3.Database('chat.db');
+
+db.run("CREATE TABLE chats (username TEXT, msg TEXT, sendDate TEXT)", function (err) {
+	if (err)
+    	console.log("Table already exists. Proceeding...");
+});
+
+// Define Message Class
 var Message = function(msg, username) {
 	this.msg = msg;
 	this.username = username;
@@ -21,12 +31,14 @@ var Message = function(msg, username) {
 }
 
 Message.prototype.saveMsg = function () {
+	db.run("INSERT INTO chats VALUES (?, ?, ?)", this.username, this.msg, this.sendDate);
 }
 
 Message.prototype.jsonify = function () {
 	return '{"msg" : "' + this.msg + '","username" : "' + this.username + '", "sendDate" : "' + this.sendDate  +'"}';
 }
 
+// Express routes
 app.get('/', function (req, res) {
 	res.sendFile( __dirname + "/" + "index.html" );
 });
@@ -38,11 +50,21 @@ app.post('/chat', function (req, res) {
 	res.send(renderedHtml);
 });
 
+// Define events, handlers
 io.on('connection', function(socket){
+
+	// On first connection, send user chat history
+	db.each("SELECT * FROM chats WHERE ?", "1", function(err, row) {
+		socket.emit('chat message', '{"msg" : "' + row.msg + '","username" : "' + row.username + '", "sendDate" : "' + row.sendDate  +'"}');
+	});
+
     socket.on('chat message', function(msg){
 		var msgObj = JSON.parse(msg);
 		var chatMsg = new Message(msgObj.msg, msgObj.username);
 		io.emit('chat message', chatMsg.jsonify());
+
+		// Save the message
+		chatMsg.saveMsg();
 	});
 
 	socket.on('report arrival', function(username){
@@ -54,6 +76,7 @@ io.on('connection', function(socket){
     });
 });
 
+// Start the server
 var server = http.listen(8008, function () {
 	var host = server.address().address
 	var port = server.address().port
